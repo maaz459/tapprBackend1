@@ -8,8 +8,8 @@ const replies = require("../routes/replies");
 
 
 module.exports = function (app) {
-  app.use(express.urlencoded({ extended: false }));
-  app.use(express.json());
+  app.use(express.urlencoded({ extended: false,limit: '150mb' }));
+  app.use(express.json({limit: '150mb'}));
   app.use("/api/users", users);
   app.use("/api/file", upload);
   app.use("/api/project", project);
