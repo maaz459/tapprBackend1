@@ -38,7 +38,7 @@ router.get("/currentpassword/:id/:password", auth, async (req, res) => {
 //Register new user
 router.post("/register", async (req, res) => {
   try {
-    const { error } = validate(req.body);
+    const { error } = validate({ email: req.body.email, password: req.body.password, name: req.body.name });
     if (error) return res.status(400).send(error.details[0].message);
 
     let user = await User.findOne({ email: req.body.email });

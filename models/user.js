@@ -65,15 +65,6 @@ function validateUser(user) {
     name: Joi.string().min(2).max(50).required(),
     email: Joi.string().min(5).max(255).required().email(),
     password: Joi.string().min(8).max(255).required(),
-    businessName: Joi.string().optional(),
-    address: Joi.string().optional(),
-    phone: Joi.string().optional(),
-    licenceNumber: Joi.string().optional(),
-    businessAddress: Joi.string().optional(),
-    abn: Joi.string().optional(),
-    signature: Joi.string().optional(),
-    profilePic: Joi.string().optional(),
-
   });
 
   return schema.validate(user);
