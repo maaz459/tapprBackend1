@@ -130,7 +130,7 @@ router.post("/forgotpasswordlink", async (req, res) => {
         if (err) {
           res.status(400).send("Server error");
         } else {
-          res.status(200).json("Email Sent");
+          res.status(200).json({message:"Email Sent"});
         }
       });
     }
