@@ -1,0 +1,10 @@
+{
+  "jwtPrivateKey": "unsecureKey",
+  "db": "mongodb://localhost/tappr",
+  "port": "3000",
+  "host": "http://localhost",
+  "refreshTokenTtl": "1y",
+  "saltFactor": 10,
+  "passwordResetLink": "http://www.linkhere.com",
+  "adminKey":"IamAdmin"
+}
