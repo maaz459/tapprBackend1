@@ -62,11 +62,7 @@ router.post("/register", async (req, res) => {
     user.password = await bcrypt.hash(user.password, salt);
     await user.save();
 
-    const token = user.generateAuthToken();
-    res
-      .header("x-auth-token", token)
-      .header("access-control-expose-headers", "x-auth-token")
-      .send(pick(user, ["_id", "name", "email"]));
+    res.send(pick(user, ["_id", "name", "email"]));
   } catch (err) {
     res.status(409).send(err.message);
   }
@@ -88,7 +84,7 @@ router.post("/login", async (req, res) => {
     res
       .header("x-auth-token", token)
       .header("access-control-expose-headers", "x-auth-token")
-      .send(pick(user, ["_id", "name", "email"]));
+      .send({ ...pick(user, ["_id", "name", "email"]), token });
   } catch (err) {
     res.status(409).send(err.message);
   }
