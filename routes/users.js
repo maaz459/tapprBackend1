@@ -102,7 +102,7 @@ router.post("/forgotpasswordlink", async (req, res) => {
     });
 
     if (user === null) {
-      res.status(403).send("User Not Exist with this email");
+      res.status(400).send("User Not Exist with this email");
     } else {
       const token = crypto.randomBytes(20).toString("hex");
       user = await user.update({ $set: { resetPasswordToken: token, resetPasswordExpires: Date.now() + 3600000 } });
@@ -128,7 +128,7 @@ router.post("/forgotpasswordlink", async (req, res) => {
 
       transporter.sendMail(mailOptions, (err, response) => {
         if (err) {
-          res.status(403).send("Server error");
+          res.status(400).send("Server error");
         } else {
           res.status(200).json("Email Sent");
         }
@@ -147,11 +147,11 @@ router.get("/reset/:resetPasswordToken", async (req, res) => {
     });
 
     if (user === null) {
-      res.status(403).send("password reset link is invalid or has expired");
+      res.status(400).send("password reset link is invalid or has expired");
     } else {
       const expiry = user.resetPasswordExpires;
       if (expiry < Date.now()) {
-        res.status(404).send("password reset link is invalid or has expired");
+        res.status(400).send("password reset link is invalid or has expired");
       }
 
       res.status(200).send({
@@ -167,9 +167,9 @@ router.get("/reset/:resetPasswordToken", async (req, res) => {
 //Update Password
 router.post("/updatePassword", async (req, res) => {
   try {
-    if (!req.body.token || !req.body.password) res.status(404).send("Data Incomplete");
+    if (!req.body.token || !req.body.password) res.status(400).send("Data Incomplete");
     let user = await User.findOne({ resetPasswordToken: req.body.token });
-    if (!user) return res.status(404).send("User not found");
+    if (!user) return res.status(400).send("User not found");
 
     const salt = await bcrypt.genSalt(config.get("saltFactor"));
     password = await bcrypt.hash(req.body.password, salt);
@@ -193,7 +193,7 @@ router.put("/updateProfile", auth, async (req, res) => {
   try {
     let user = await User.findById(req.user._id);
 
-    if (!user) return res.status(404).send("The user with the given id was not found.");
+    if (!user) return res.status(400).send("The user with the given id was not found.");
     user = await user.update({
       $set: {
         address: req.body.address,
