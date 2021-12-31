@@ -50,6 +50,7 @@ router.post("/", auth, async (req, res) => {
       userId: req.user._id,
       status: req.body.status,
       planNo: req.body.planNo,
+      lastScreen:req.body.lastScreen
     });
     await project.save();
     res.status(200).send(project);

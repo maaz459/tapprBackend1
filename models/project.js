@@ -17,7 +17,9 @@ const projectSchema = new mongoose.Schema({
   planNo: { type: String },
   status: { type: String, enum: ["COMPLETED", "INPROGRESS", "PENDING"] },
   userId: { type: String },
-  publishDate: { type: String }
+  publishDate: { type: String },
+  lastScreen: { type: String }
+
 });
 
 const Project = mongoose.model("Project", projectSchema);
