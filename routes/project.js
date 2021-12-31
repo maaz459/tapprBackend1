@@ -32,8 +32,6 @@ router.get("/:id", auth, async (req, res) => {
 //Add new Project
 router.post("/", auth, async (req, res) => {
   try {
-    const { error } = validateProject(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
     const project = new Project({
       publishDate: moment().toJSON(),
       image: req.body.image,
