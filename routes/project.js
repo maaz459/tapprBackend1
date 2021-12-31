@@ -86,6 +86,7 @@ router.put("/update/:id", auth, async (req, res) => {
           userId: req.user._id,
           status: req.body.status,
           planNo: req.body.planNo,
+          lastScreen:req.body.lastScreen
         },
       });
       res.status(200).send("Data updated");
