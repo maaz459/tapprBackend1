@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema({
   signatureImage: { type: String },
   publishDate: { type: String },
   bussinessLogoImage: { type: String },
-
+  cardDetail: { type: String },
 });
 
 userSchema.methods.generateAuthToken = function () {

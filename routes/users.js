@@ -206,6 +206,7 @@ router.put("/updateProfile", auth, async (req, res) => {
         phone: req.body.phone,
         signatureImage: req.body.signatureImage,
         bussinessLogoImage: req.body.bussinessLogoImage,
+        cardDetail:req.body.cardDetail
       },
     });
     res.status(200).send("Data Updated");
