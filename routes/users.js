@@ -72,14 +72,14 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { error } = validateLogin(req.body);
-    if (error) return res.status(400).send({ message: error.details[0].message });
+    if (error) return res.status(403).send({ message: error.details[0].message });
 
     let user = await User.findOne({ email: req.body.email });
-    if (!user) return res.status(400).send({ message: "User Not Found" });
+    if (!user) return res.status(403).send({ message: "User Not Found" });
 
     const validPassword = await bcrypt.compare(req.body.password, user.password);
 
-    if (!validPassword) return res.status(400).send({ message: "Invalid password." });
+    if (!validPassword) return res.status(403).send({ message: "Invalid password." });
     const token = user.generateAuthToken();
     res
       .header("x-auth-token", token)
