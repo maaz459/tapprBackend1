@@ -50,7 +50,7 @@ router.post("/", auth, async (req, res) => {
       userId: req.user._id,
       status: req.body.status,
       planNo: req.body.planNo,
-      lastScreen:req.body.lastScreen
+      lastScreen: req.body.lastScreen,
     });
     await project.save();
     res.status(200).send(project);
@@ -64,7 +64,7 @@ router.put("/update/:id", auth, async (req, res) => {
   try {
     let project = await Project.findOne({ _id: req.params.id });
 
-    if (!project) return res.status(404).send("The project with the given id was not found.");
+    if (!project) return res.status(404).send({ message: "The project with the given id was not found." });
 
     if (project.userId === req.user._id) {
       console.log(req.body);
@@ -86,15 +86,15 @@ router.put("/update/:id", auth, async (req, res) => {
           userId: req.user._id,
           status: req.body.status,
           planNo: req.body.planNo,
-          lastScreen:req.body.lastScreen
+          lastScreen: req.body.lastScreen,
         },
       });
-      res.status(200).send("Data updated");
+      res.status(200).send({ message: "Data updated" });
     } else {
-      res.send(404).send("Wrong project ID");
+      res.send(404).send({ message: "Wrong project ID" });
     }
   } catch (err) {
-    res.status(409).send(err.message);
+    res.status(409).send({ message: err.message });
   }
 });
 
