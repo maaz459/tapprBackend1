@@ -130,7 +130,7 @@ router.post("/forgotpasswordlink", async (req, res) => {
         if (err) {
           res.status(400).send("Server error");
         } else {
-          res.status(200).json({message:"Email Sent"});
+          res.status(200).json({ message: "Email Sent" });
         }
       });
     }
@@ -193,7 +193,7 @@ router.put("/updateProfile", auth, async (req, res) => {
   try {
     let user = await User.findById(req.user._id);
 
-    if (!user) return res.status(400).send("The user with the given id was not found.");
+    if (!user) return res.status(400).send({ message: "The user with the given id was not found." });
     user = await user.update({
       $set: {
         address: req.body.address,
@@ -206,12 +206,12 @@ router.put("/updateProfile", auth, async (req, res) => {
         phone: req.body.phone,
         signatureImage: req.body.signatureImage,
         bussinessLogoImage: req.body.bussinessLogoImage,
-        cardDetail:req.body.cardDetail
+        cardDetail: req.body.cardDetail,
       },
     });
-    res.status(200).send("Data Updated");
+    res.status(200).send({ message: "Data Updated" });
   } catch (err) {
-    res.status(409).send(err.message);
+    res.status(409).send({ message: err.message });
   }
 });
 
