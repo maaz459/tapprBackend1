@@ -10,7 +10,7 @@ router.get("/", auth, async (req, res) => {
     const project = await Project.find({ userId: req.user._id });
     res.status(200).send(project);
   } catch (err) {
-    res.status(409).send(err.message);
+    res.status(409).send({ message: err.message });
   }
 });
 
@@ -22,10 +22,10 @@ router.get("/:id", auth, async (req, res) => {
     if (project.userId === req.user._id) {
       res.status(200).send(project);
     } else {
-      res.status(404).send("Wrong Project Id");
+      res.status(404).send({ message: "Wrong Project Id" });
     }
   } catch (err) {
-    res.status(409).send(err.message);
+    res.status(409).send({ message: err.message });
   }
 });
 
@@ -55,7 +55,7 @@ router.post("/", auth, async (req, res) => {
     await project.save();
     res.status(200).send(project);
   } catch (err) {
-    res.status(409).send(err.message);
+    res.status(409).send({ message: err.message });
   }
 });
 
@@ -67,7 +67,6 @@ router.put("/update/:id", auth, async (req, res) => {
     if (!project) return res.status(404).send({ message: "The project with the given id was not found." });
 
     if (project.userId === req.user._id) {
-      console.log(req.body);
       project = await project.updateOne({
         $set: {
           image: req.body.image,
@@ -115,7 +114,7 @@ router.get("/search/:filterWord", auth, async (req, res) => {
       }
     }
   } catch (err) {
-    res.status(409).send(err.message);
+    res.status(409).send({ message: err.message });
   }
 });
 

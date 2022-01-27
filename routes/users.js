@@ -16,7 +16,7 @@ router.get("/me", auth, async (req, res) => {
     const user = await User.findById(req.user._id).select("-password");
     res.send(user);
   } catch (err) {
-    res.status(409).send(err.message);
+    res.status(409).send({ message: err.message });
   }
 });
 
@@ -24,14 +24,14 @@ router.get("/me", auth, async (req, res) => {
 router.get("/currentpassword/:id/:password", auth, async (req, res) => {
   try {
     let user = await User.findOne({ _id: req.params.id });
-    if (!user) return res.status(400).send("Invalid id.");
+    if (!user) return res.status(400).send({ message: "Invalid id." });
 
     const validPassword = await bcrypt.compare(req.params.password, user.password);
-    if (!validPassword) return res.status(400).send("Invalid password.");
+    if (!validPassword) return res.status(400).send({ message: "Invalid password." });
 
     res.send(user);
   } catch (err) {
-    res.status(409).send(err.message);
+    res.status(409).send({ message: err.message });
   }
 });
 
@@ -39,10 +39,10 @@ router.get("/currentpassword/:id/:password", auth, async (req, res) => {
 router.post("/register", async (req, res) => {
   try {
     const { error } = validate({ email: req.body.email, password: req.body.password, name: req.body.name });
-    if (error) return res.status(400).send(error.details[0].message);
+    if (error) return res.status(400).send({ message: error.details[0].message });
 
     let user = await User.findOne({ email: req.body.email });
-    if (user) return res.status(400).send("User Already Registered");
+    if (user) return res.status(400).send({ message: "User Already Registered" });
 
     user = new User({
       name: req.body.name,
@@ -64,7 +64,7 @@ router.post("/register", async (req, res) => {
 
     res.send(pick(user, ["_id", "name", "email"]));
   } catch (err) {
-    res.status(409).send(err.message);
+    res.status(409).send({ message: err.message });
   }
 });
 
@@ -72,21 +72,21 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { error } = validateLogin(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
+    if (error) return res.status(400).send({ message: error.details[0].message });
 
     let user = await User.findOne({ email: req.body.email });
-    if (!user) return res.status(400).send("User Not Found");
+    if (!user) return res.status(400).send({ message: "User Not Found" });
 
     const validPassword = await bcrypt.compare(req.body.password, user.password);
 
-    if (!validPassword) return res.status(400).send("Invalid password.");
+    if (!validPassword) return res.status(400).send({ message: "Invalid password." });
     const token = user.generateAuthToken();
     res
       .header("x-auth-token", token)
       .header("access-control-expose-headers", "x-auth-token")
       .send({ ...pick(user, ["_id", "name", "email"]), token });
   } catch (err) {
-    res.status(409).send(err.message);
+    res.status(409).send({ message: err.message });
   }
 });
 
@@ -94,7 +94,7 @@ router.post("/login", async (req, res) => {
 router.post("/forgotpasswordlink", async (req, res) => {
   try {
     if (req.body.email === "") {
-      res.status(400).send("email required");
+      res.status(400).send({ message: "email required" });
     }
 
     let user = await User.findOne({
@@ -102,7 +102,7 @@ router.post("/forgotpasswordlink", async (req, res) => {
     });
 
     if (user === null) {
-      res.status(400).send("User Not Exist with this email");
+      res.status(400).send({ message: "User Not Exist with this email" });
     } else {
       const token = crypto.randomBytes(20).toString("hex");
       user = await user.update({ $set: { resetPasswordToken: token, resetPasswordExpires: Date.now() + 3600000 } });
@@ -128,14 +128,14 @@ router.post("/forgotpasswordlink", async (req, res) => {
 
       transporter.sendMail(mailOptions, (err, response) => {
         if (err) {
-          res.status(400).send("Server error");
+          res.status(400).send({ message: "Server error" });
         } else {
           res.status(200).json({ message: "Email Sent" });
         }
       });
     }
   } catch (err) {
-    res.status(409).send(err.message);
+    res.status(409).send({ message: err.message });
   }
 });
 
@@ -147,11 +147,11 @@ router.get("/reset/:resetPasswordToken", async (req, res) => {
     });
 
     if (user === null) {
-      res.status(400).send("password reset link is invalid or has expired");
+      res.status(400).send({ message: "password reset link is invalid or has expired" });
     } else {
       const expiry = user.resetPasswordExpires;
       if (expiry < Date.now()) {
-        res.status(400).send("password reset link is invalid or has expired");
+        res.status(400).send({ message: "password reset link is invalid or has expired" });
       }
 
       res.status(200).send({
@@ -160,16 +160,16 @@ router.get("/reset/:resetPasswordToken", async (req, res) => {
       });
     }
   } catch (err) {
-    res.status(409).send(err.message);
+    res.status(409).send({ message: err.message });
   }
 });
 
 //Update Password
 router.post("/updatePassword", async (req, res) => {
   try {
-    if (!req.body.token || !req.body.password) res.status(400).send("Data Incomplete");
+    if (!req.body.token || !req.body.password) res.status(400).send({ message: "Data Incomplete" });
     let user = await User.findOne({ resetPasswordToken: req.body.token });
-    if (!user) return res.status(400).send("User not found");
+    if (!user) return res.status(400).send({ message: "User not found" });
 
     const salt = await bcrypt.genSalt(config.get("saltFactor"));
     password = await bcrypt.hash(req.body.password, salt);
@@ -182,9 +182,9 @@ router.post("/updatePassword", async (req, res) => {
       },
     });
 
-    res.status(200).send("Password Updated");
+    res.status(200).send({ message: "Password Updated" });
   } catch (err) {
-    res.status(409).send(err.message);
+    res.status(409).send({ message: err.message });
   }
 });
 
