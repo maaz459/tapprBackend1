@@ -1,6 +1,6 @@
 {
   "jwtPrivateKey": "unsecureKey",
-  "db": "mongodb+srv://tappr:tappr@tappr.9cssy.mongodb.net/tappr?retryWrites=true&w=majority?ssl=true",
+  "db": "mongodb+srv://tappr:tappr@tappr.9cssy.mongodb.net/tappr?retryWrites=true&w=majority&ssl=true",
   "port": "3800",
   "host": "http://localhost",
   "refreshTokenTtl": "1y",
