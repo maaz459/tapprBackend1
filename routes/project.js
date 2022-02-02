@@ -7,7 +7,9 @@ const { Project, validateProject } = require("../models/project");
 // Get All Projects
 router.get("/", auth, async (req, res) => {
   try {
-    const project = await Project.find({ userId: req.user._id });
+    const project = await Project.find({ userId: req.user._id }).select({
+      image: 0,
+    });
     res.status(200).send(project);
   } catch (err) {
     res.status(409).send({ message: err.message });
@@ -117,5 +119,6 @@ router.get("/search/:filterWord", auth, async (req, res) => {
     res.status(409).send({ message: err.message });
   }
 });
+
 
 module.exports = router;
