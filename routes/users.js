@@ -215,4 +215,19 @@ router.put("/updateProfile", auth, async (req, res) => {
   }
 });
 
+//Delete User
+router.get("/deleteAccount", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    console.log(user);
+    if (!user) res.send({ message: "User Not Found" });
+    else {
+      await user.deleteOne();
+      res.status(200).send({ message: "Account Deleted" });
+    }
+  } catch (err) {
+    res.status(409).send({ message: err.message });
+  }
+});
+
 module.exports = router;
