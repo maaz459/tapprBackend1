@@ -220,7 +220,7 @@ router.get("/deleteAccount", auth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     console.log(user);
-    if (!user) res.send({ message: "User Not Found" });
+    if (!user) res.status(400).send({ message: "User Not Found" });
     else {
       await user.deleteOne();
       res.status(200).send({ message: "Account Deleted" });
