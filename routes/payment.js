@@ -1,8 +1,7 @@
+require("dotenv").config();
 const express = require("express");
 const router = express.Router();
-const stripe = require("stripe")(
-  "sk_test_51KSrJ5GYlCq0dU7hMcLHWwfiPIwGnmLCFyJdujAQMK5aNZ39FTfgOsTfEP2tc29fr0PRBinzcbCQoNpoxURj8Oph00xilpwj9A"
-);
+const stripe = require("stripe")(process.env.STRIPE_KEY);
 
 router.post("/payment-sheet", async (req, res) => {
   const data = req.body;
@@ -25,8 +24,7 @@ router.post("/payment-sheet", async (req, res) => {
       paymentIntent: paymentIntent.client_secret,
       ephemeralKey: ephemeralKey.secret,
       customer: customer.id,
-      publishableKey:
-        "sk_test_51KSrJ5GYlCq0dU7hMcLHWwfiPIwGnmLCFyJdujAQMK5aNZ39FTfgOsTfEP2tc29fr0PRBinzcbCQoNpoxURj8Oph00xilpwj9A",
+      publishableKey: process.env.STRIPE_KEY,
     });
   } catch (err) {
     res.status(409).send({ message: err.message });
