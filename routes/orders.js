@@ -3,7 +3,9 @@ const express = require("express");
 const router = express.Router();
 const moment = require("moment");
 const auth = require("../middleware/auth");
-
+const keys = require("../config/dev");
+const nodemailer = require("nodemailer");
+const config = require("config");
 //Add new Order
 router.post("/", auth, async (req, res) => {
   try {
@@ -11,12 +13,37 @@ router.post("/", auth, async (req, res) => {
       userId: req.user._id,
       name: req.user.name,
       email: req.user.email,
-      receiptNo: req.body.receiptNo,
+      projectId: req.body.projectId,
       amount: req.body.amount,
       paymentBy: req.body.paymentBy,
+      receiptNo: moment().format("dmmyyyyHHMMSS"),
       publishDate: moment().toJSON(),
     });
-    await order.save();
+    const newSavedOrder = await order.save();
+    res.send(newSavedOrder);
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: keys.email,
+        pass: keys.password,
+      },
+    });
+
+    const mailOptions = {
+      from: keys.email,
+      to: `${req.user.email}`,
+      subject: "Tappr PTY LTD - Order Successfull",
+      html: "Your Order Successfull With Receipt No " + ` ${newSavedOrder.receiptNo} `,
+    };
+
+    transporter.sendMail(mailOptions, (err, response) => {
+      if (err) {
+        res.status(400).send({ message: "Server error" });
+      } else {
+        res.status(200).json({ message: "Email Sent" });
+      }
+    });
+
     res.status(200).send({ message: "Order Added" });
   } catch (err) {
     res.status(409).send({ message: err.message });
@@ -67,6 +94,41 @@ router.put("/:orderId", auth, async (req, res) => {
       },
     });
     res.status(200).send({ message: "Data Updated" });
+  } catch (err) {
+    res.status(409).send({ message: err.message });
+  }
+});
+
+//Resend Order Email
+router.get("/resendEmail/:orderId", auth, async (req, res) => {
+  try {
+    const order = await Orders.findById(req.params.orderId);
+    if (order) {
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: keys.email,
+          pass: keys.password,
+        },
+      });
+
+      const mailOptions = {
+        from: keys.email,
+        to: `${req.user.email}`,
+        subject: "Tappr PTY LTD - Order Successfull",
+        html: "Your Order Successfull With Receipt No " + ` ${order.receiptNo} `,
+      };
+
+      transporter.sendMail(mailOptions, (err, response) => {
+        if (err) {
+          res.status(400).send({ message: "Server error" });
+        } else {
+          res.status(200).json({ message: "Email Sent" });
+        }
+      });
+    } else {
+      res.status(400).send({ message: "No Order Present" });
+    }
   } catch (err) {
     res.status(409).send({ message: err.message });
   }

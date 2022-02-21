@@ -5,6 +5,10 @@ const orders = new mongoose.Schema({
     type: String,
     required: true,
   },
+  projectId: {
+    type: String,
+    required: true,
+  },
   name: {
     type: String,
     required: true,
@@ -24,10 +28,10 @@ const orders = new mongoose.Schema({
   paymentBy: {
     type: String,
     required: true,
-    enum: ["APPLE", "STRIPE", "CARD"] 
+    enum: ["APPLE", "STRIPE", "CARD"],
   },
   publishDate: { type: String },
-
+  
 });
 const Orders = mongoose.model("orders", orders);
 
