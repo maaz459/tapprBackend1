@@ -40,11 +40,9 @@ router.post("/", auth, async (req, res) => {
       if (err) {
         res.status(400).send({ message: "Server error" });
       } else {
-        res.status(200).json({ message: "Email Sent" });
+        res.status(200).send({ message: newSavedOrder });
       }
     });
-
-    res.status(200).send({ message: "Order Added" });
   } catch (err) {
     res.status(409).send({ message: err.message });
   }
