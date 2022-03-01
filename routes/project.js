@@ -106,15 +106,15 @@ router.put("/update/:id", auth, async (req, res) => {
 router.get("/search/:filterWord", auth, async (req, res) => {
   try {
     const filter = req.params.filterWord;
-    const project = await Project.find({ addressLookup: { $regex: filter }, userId: req.user._id });
+    const project = await Project.find({ addressLookup: { $regex: filter, $options: "i" }, userId: req.user._id });
     if (project.length > 0) {
       res.status(200).send(project);
     } else {
-      const project = await Project.find({ dpNo: { $regex: filter }, userId: req.user._id });
+      const project = await Project.find({ dpNo: { $regex: filter, $options: "i" }, userId: req.user._id });
       if (project.length > 0) {
         res.status(200).send(project);
       } else {
-        const project = await Project.find({ planNo: { $regex: filter }, userId: req.user._id });
+        const project = await Project.find({ planNo: { $regex: filter, $options: "i" }, userId: req.user._id });
         res.status(200).send(project);
       }
     }
