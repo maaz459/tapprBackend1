@@ -169,7 +169,6 @@ router.post("/sendProjectDetail/:orderId", auth, async (req, res) => {
             receiptNo: order.receiptNo,
             createdDate: moment(Date.now()).format("MMMM D, YYYY"),
             time: moment(Date.now()).format("hh:mm"),
-
             item: fileName,
             amount: `$${order.amount}`,
             total: `$${order.amount}`,

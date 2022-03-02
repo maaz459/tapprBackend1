@@ -9,6 +9,7 @@ const keys = require("../config/dev");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const config = require("config");
+const { resolve } = require("path");
 
 //Check For User Data in DB using JWT Token
 router.get("/me", auth, async (req, res) => {
@@ -225,6 +226,15 @@ router.get("/deleteAccount", auth, async (req, res) => {
       await user.deleteOne();
       res.status(200).send({ message: "Account Deleted" });
     }
+  } catch (err) {
+    res.status(409).send({ message: err.message });
+  }
+});
+//Delete User
+router.get("/logo", async (req, res) => {
+  try {
+    const path = resolve("./");
+    res.sendFile(path + "/files/tapprlogo.png");
   } catch (err) {
     res.status(409).send({ message: err.message });
   }
