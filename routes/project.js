@@ -6,6 +6,8 @@ const { Project, validateProject } = require("../models/project");
 const keys = require("../config/dev");
 const nodemailer = require("nodemailer");
 const config = require("config");
+const fs = require("fs");
+const { createCanvas, loadImage } = require("canvas");
 
 // Get All Projects
 router.get("/", auth, async (req, res) => {
@@ -128,7 +130,25 @@ router.post("/sendProjectDetail/:projectId", auth, async (req, res) => {
   const projectId = req.params.projectId;
   try {
     if (!projectId) res.status(400).send({ message: "Project Id is not present" });
+
     const project = await Project.findById(projectId);
+
+    // get the base64 string
+    var base64String = project.image.replace(/^data:image\/[a-z]+;base64,/, "");
+    const fileName = `${Date.now()}-tappr-projectFile.pdf`;
+    const path = `files/${fileName}`;
+
+    await loadImage(Buffer.from(base64String, "base64")).then(async (img) => {
+      const canvas = createCanvas(img.width, img.height, "pdf");
+      const ctx = canvas.getContext("2d");
+
+      ctx.drawImage(img, 0, 0, img.width, img.height);
+      const base64image = canvas.toBuffer();
+      // write the file to a pdf file
+      await fs.writeFile(path, base64image, function (err) {
+        console.log("File created");
+      });
+    });
     if (project) {
       const transporter = nodemailer.createTransport({
         service: "gmail",
@@ -142,15 +162,22 @@ router.post("/sendProjectDetail/:projectId", auth, async (req, res) => {
         from: keys.email,
         to: `${req.body.to}`,
         cc: req.body.cc,
-        subject: "Tappr PTY LTD - Link to reset password",
-        html: "Hello Your Project is Created With\n\n" + `Id ${project._id} `,
+        subject: "Tappr PTY LTD - Project Created",
+        html: "Your Project is Created With\n\n" + `Id ${project._id} `,
+        attachments: [
+          {
+            // utf-8 string as an attachment
+            path: path,
+          },
+        ],
       };
-
       transporter.sendMail(mailOptions, (err, response) => {
         if (err) {
-          res.status(400).send({ message: "Server error" });
+          fs.unlinkSync(`./${path}`);
+          return res.status(400).send({ message: "Server error" });
         } else {
-          res.status(200).json({ message: "Email Sent" });
+          fs.unlinkSync(`./${path}`);
+          return res.status(200).json({ message: "Email Sent" });
         }
       });
     }
